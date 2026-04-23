@@ -1,3 +1,4 @@
+
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
 
@@ -46,7 +47,7 @@ bot.onText(/\/ligas/, (msg) => {
 bot.on('callback_query', async (callbackQuery) => {
   const msg = callbackQuery.message;
   const liga = callbackQuery.data;
-  const ligaInfo = ligas[liga];
+  const ligaInfo = ligas;
 
   bot.sendMessage(msg.chat.id, `Buscando jogos de ${ligaInfo.nome}...`);
 
@@ -59,4 +60,32 @@ bot.on('callback_query', async (callbackQuery) => {
         league: ligaInfo.id,
         season: 2024,
         date: hoje,
-        timezone: 'America/Sao_Paulo
+        timezone: 'America/Sao_Paulo'
+      }
+    });
+
+    const jogos = response.data.response;
+
+    if (jogos.length === 0) {
+      bot.sendMessage(msg.chat.id, `Nenhum jogo de ${ligaInfo.nome} hoje.`);
+      return;
+    }
+
+    let mensagem = `⚽ *${ligaInfo.nome} - Hoje ${hoje.split('-').reverse().join('/')}*\n\n`;
+
+    jogos.forEach(jogo => {
+      const hora = getHoraBrasil(jogo.fixture.date);
+      const casa = jogo.teams.home.name;
+      const fora = jogo.teams.away.name;
+      mensagem += `*${hora}* - ${casa} x ${fora}\n`;
+    });
+
+    bot.sendMessage(msg.chat.id, mensagem, {parse_mode: 'Markdown'});
+
+  } catch (error) {
+    bot.sendMessage(msg.chat.id, 'Deu erro ao buscar os jogos 😢');
+    console.log(error);
+  }
+});
+
+console.log('Bot de Telegram rodando...');
