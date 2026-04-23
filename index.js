@@ -43,7 +43,7 @@ bot.onText(/\/ligas/, (msg) => {
 bot.on('callback_query', async (callbackQuery) => {
   const msg = callbackQuery.message;
   const liga = callbackQuery.data;
-  const ligaInfo = ligas;
+  const ligaInfo = ligas[liga];
 
   if (!ligaInfo) return;
 
