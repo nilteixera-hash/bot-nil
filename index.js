@@ -1,3 +1,24 @@
+const TelegramBot = require('node-telegram-bot-api');
+const axios = require('axios');
+
+const token = process.env.TOKEN;
+const bot = new TelegramBot(token, {polling: true});
+
+const API_KEY = process.env.API_KEY;
+
+const ligas = {
+  serie_b: { id: 72, nome: 'Brasileirão Série B' },
+  copa_br: { id: 73, nome: 'Copa do Brasil' }
+};
+
+function getDataBrasil() {
+  const data = new Date();
+  return data.toLocaleDateString('pt-BR', {timeZone: 'America/Sao_Paulo'}).split('/').reverse().join('-');
+}
+
+function getHoraBrasil(dataISO) {
+  return new Date(dataISO).toLocaleTimeString('pt-BR', {timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit'});
+}
 
 bot.on('callback_query', async (callbackQuery) => {
   const msg = callbackQuery.message;
